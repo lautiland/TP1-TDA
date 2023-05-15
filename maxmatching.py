@@ -1,10 +1,28 @@
 from math import sqrt
 
-def obtener_coordenadas(nombre_archivo):
+def preguntar_nombres():
+    """
+    parametros: -
+    pre: los archivos deben existir y no ser vacios.
+    función: pregunta los nombres de los archivos.
+    retorna: los nombres de los archivos.
+    """
+    nombres = []
+    nombres.append(input("Cuál es el nombre del primer archivo? "))
+    nombres.append(input("Cuál es el nombre del segundo archivo? "))
+    return nombres
 
-    with open(nombre_archivo, 'r') as archivo:
+def obtener_coordenadas(nombre_archivo):
+    """
+    parametros: nombre de un archivo que contiene puntos.
+    pre: el archivo deben existir y no ser vacio.
+    función: extrae los puntos del archivo y los guarda en una lista.
+    retorna: la lista con los puntos.
+    """
+
+    cords = []
+    with open(nombre_archivo, 'r', encoding="utf8") as archivo:
         archivo.seek(0)
-        cords = []
 
         for linea in archivo:
             linea = linea.rstrip()
@@ -13,32 +31,51 @@ def obtener_coordenadas(nombre_archivo):
     return cords
 
 def preferencia(solicitante, requerido):
+    """
+    parametros: un punto solicitante y un punto requerido.
+    pre: los puntos deben tener dos coordenadas decimales.
+    función: calcula la distancia entre los dos puntos.
+    retorna: devuelve la distancia entre los dos puntos.
+    """
 
-    puntajeX = float(solicitante[0].replace(',', '.')) - float(requerido[0].replace(',', '.'))
-    puntajeY = float(solicitante[1].replace(',', '.')) - float(requerido[1].replace(',', '.'))
+    puntaje_x = float(solicitante[0].replace(',', '.')) - float(requerido[0].replace(',', '.'))
+    puntaje_y = float(solicitante[1].replace(',', '.')) - float(requerido[1].replace(',', '.'))
 
-    modulo = sqrt((puntajeX ** 2) + (puntajeY ** 2))
+    modulo = sqrt((puntaje_x ** 2) + (puntaje_y ** 2))
 
     return modulo
 
 
 def dominado(solicitante, requerido):
-    dominaX = False
-    dominaY = False
-    if (float(solicitante[0].replace(',', '.')) >= float(requerido[0].replace(',', '.'))):
-        dominaX = True
+    """
+    parametros: un punto solicitante y un punto requerido.
+    pre: los puntos deben tener dos coordenadas decimales.
+    función: se fija si el punto solicitante es mayor en ambas coordenadas que el requerido.
+    retorna: devuelve True o False dependiento del resultado.
+    """
 
-    if (float(solicitante[1].replace(',', '.')) >= float(requerido[1].replace(',', '.'))):
-        dominaY = True
+    domina_x = False
+    domina_y = False
 
-    if dominaX and dominaY:
+    if float(solicitante[0].replace(',', '.')) >= float(requerido[0].replace(',', '.')):
+        domina_x = True
+
+    if float(solicitante[1].replace(',', '.')) >= float(requerido[1].replace(',', '.')):
+        domina_y = True
+
+    if domina_x and domina_y:
         return True
     else:
         return False
 
-    
 
 def gale_shapley(solicitantes, requeridos):
+    """
+    parametros: una lista de puntos solicitantes y una de puntos requeridos.
+    pre: las listas tienen que tener la misma cantidad de puntos.
+    función: crea un match perfecto entre solicitantes y requeridos según las condiciónes.
+    retorna: devuelve el match resultante.
+    """
 
     match = []
     soli_sin_pareja = solicitantes.copy()
@@ -64,28 +101,48 @@ def gale_shapley(solicitantes, requeridos):
                     pareja_encontrada = True
 
                 else:
-                    if preferencia(match[indice][0], match[indice][1]) >= preferencia(solicitante, requerido):
-                            soli_sin_pareja.insert(0, match[indice][0])
-                            match.remove(match[indice])
-                            match.append([solicitante, requerido])
-                            pareja_encontrada = True
-            
+                    preferencia_futura = preferencia(match[indice][0], match[indice][1])
+                    preferencia_actual = preferencia(solicitante, requerido)
+                    if preferencia_futura < preferencia_actual:
+                        soli_sin_pareja.insert(0, match[indice][0])
+                        match.remove(match[indice])
+                        match.append([solicitante, requerido])
+                        pareja_encontrada = True
+
     return match
 
-def imprimir(match):
-    print("TamaÃ±o del matching: ", len(match))
+def imprimir(match, nombres_archivos):
+    """
+    parametros: un match de puntos, los nombres de las listas.
+    pre: el match de puntos no debe ser vacío.
+    función: imprime en consola el match.
+    retorna: -
+    """
+
+    nombre_solicitantes = nombres_archivos.rstrip(".txt")
+    nombre_requeridos = nombres_archivos.rstrip(".txt")
+
+    print("Tamaño del matching: ", len(match))
     print("\n")
-    print("(A â†’ B)")
+    print("(", nombre_solicitantes, " → ", nombre_requeridos,")")
     for pareja in match:
-        print(pareja[0], " â†’ ", pareja[1])
+        print(pareja[0], " → ", pareja[1])
 
 def main():
+    """
+    función principal
+    """
 
-    cordsA = obtener_coordenadas("A.txt")
-    cordsB = obtener_coordenadas("B.txt")
+    nombres_archivos = []
 
-    match = gale_shapley(cordsA, cordsB)
+    #cant_puntos = preguntar_puntos()
+    nombres_archivos = preguntar_nombres()
 
-    imprimir(match)
+    cords_a = obtener_coordenadas(nombres_archivos[0])
+    cords_b = obtener_coordenadas(nombres_archivos[1])
+
+    match = gale_shapley(cords_a, cords_b)
+
+    imprimir(match, nombres_archivos)
 
 main()
