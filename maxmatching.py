@@ -186,8 +186,8 @@ def main():
     numero_de_puntos = 3
 
     for i in range(1, 15):
-        nombre_archivo_1 = "A" + str(i) + ".txt"
-        nombre_archivo_2 = "B" + str(i) + ".txt"
+        nombre_archivo_1 = "ejemplos/A" + str(i) + ".txt"
+        nombre_archivo_2 = "ejemplos/B" + str(i) + ".txt"
         numero_de_puntos = len(obtener_coordenadas(nombre_archivo_1))
         max_matching(numero_de_puntos, nombre_archivo_1, nombre_archivo_2)
 
