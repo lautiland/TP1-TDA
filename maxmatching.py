@@ -9,13 +9,9 @@ def obtener_coordenadas(nombre_archivo):    # O(n)
     """
 
     cords = []
-    with open(nombre_archivo, 'r', encoding="utf8") as archivo: 
-        archivo.seek(0) # O(1)
+    with open(nombre_archivo, 'r', encoding="utf8") as archivo: # O(1)
 
-        for linea in archivo:   # O(n)
-            linea = linea.rstrip()  # O(1)
-            linea = linea.replace(',', '.') # O(1)
-            cords.append(linea.split(' '))  # O(1)
+        cords = [linea.rstrip().replace(',', '.').split() for linea in archivo] # O(n)
 
     return cords
 
@@ -29,8 +25,8 @@ def preferencia(solicitante, requerido):    # O(1)
     if dominado(solicitante, requerido):    # O(1)
         puntaje_x = float(solicitante[0]) - float(requerido[0]) # O(1)
         puntaje_y = float(solicitante[1]) - float(requerido[1]) # O(1)
-
-        modulo = sqrt((puntaje_x ** 2) + (puntaje_y ** 2))  # O(1)
+        modulo_cuadrado = (puntaje_x ** 2) + (puntaje_y ** 2)   # O(1)
+        modulo = sqrt(modulo_cuadrado)  # O(1)
     else:
         modulo = 0  # O(1)
     return modulo   # O(1)
@@ -71,29 +67,16 @@ def imprimir(match, nombre_archivo_1, nombre_archivo_2):    # O(n)
 
 def merge_sort(element_x, set_y):   # O(n log n)
     """
-    parametros: una lista de puntos a ordenar por cercania a otro punto.
-    pre: el match de puntos no debe ser vacío.
-    función: imprime en consola el match.
-    retorna: la lista ordenada.
+    parametros: un punto solicitante y una lista de puntos requeridos.
+    pre: el punto solicitante debe existir y la lista de puntos requeridos debe existir y no ser vacía.
+    función: ordena la lista de puntos requeridos según la preferencia del punto solicitante y elimina los no válidos.
+    retorna: la lista de puntos requeridos validos ordenada.
     """
-    set_rta = set_y   # O(1)
 
-    if len(set_y) > 1:  # O(1)
-
-        rta_izq = []    # O(1)
-        rta_der = []    # O(1)
-
-        mid = len(set_y)//2   # O(1)
-
-        set_izq = set_y[:mid]   # O(1)
-        set_der = set_y[mid:]   # O(1)
-
-        rta_izq = merge_sort(element_x, set_izq)    # O(n log n)
-        rta_der = merge_sort(element_x, set_der)    # O(n log n)
-
-        if preferencia(element_x, rta_izq[0]) < preferencia(element_x, rta_der[0]): # O(1)
-            set_rta = rta_izq + rta_der   # O(1)
-
+    set_rta = set_y[:]  # O(n)
+    set_rta.sort(key=lambda element: preferencia(element_x, element))   # O(n log n)
+    set_rta = [element for element in set_rta if preferencia(element_x, element) != 0]  # O(n)
+ 
     return set_rta  # O(1)
 
 def esta_en(a_buscar, lista):   # O(n)
