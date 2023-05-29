@@ -120,10 +120,7 @@ def verificar(match):   # O(n)
         if not dominado(pareja[0], pareja[1]):  # O(1)
             respuesta = False   # O(1)
 
-    if respuesta:   # O(1)
-        print("EL match es perfecto")   # O(1)
-    else:
-        print("Error")  # O(1)
+    return respuesta
 
 
 def max_matching(numero_de_puntos, nombre_archivo_1, nombre_archivo_2): # O(n^2 log n)
@@ -160,7 +157,11 @@ def max_matching(numero_de_puntos, nombre_archivo_1, nombre_archivo_2): # O(n^2 
                 match.append([element_a, set_b[indice]])    # O(1)
 
         #imprimir(match, nombre_archivo_1, nombre_archivo_2)
-        verificar(match)
+        if verificar(match):
+            return len(match)
+        else:
+            print("El resultado no es válido")
+            return 0
 
 def main():
     """
@@ -168,10 +169,17 @@ def main():
     """
     numero_de_puntos = 3
 
+    resultados = [3, 2, 1, 1, 1, 2, 2, 2, 5, 3, 2, 2, 2, 15, 5]
+
+
+
     for i in range(1, 15):
         nombre_archivo_1 = "ejemplos/A" + str(i) + ".txt"
         nombre_archivo_2 = "ejemplos/B" + str(i) + ".txt"
         numero_de_puntos = len(obtener_coordenadas(nombre_archivo_1))
-        max_matching(numero_de_puntos, nombre_archivo_1, nombre_archivo_2)
+        if resultados [i] == max_matching(numero_de_puntos, nombre_archivo_1, nombre_archivo_2):
+            print("Prueba número ", i, " superada")
+        else:
+            print("Prueba número ", i, " fallida")
 
 main()
